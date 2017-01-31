@@ -1,5 +1,7 @@
 # OJ-Tools
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ghKelo/OJ-Tools.svg)](https://greenkeeper.io/)
+
 一些OJ工具
 ## ojpart
 ### usage
