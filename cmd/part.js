@@ -3,16 +3,12 @@
 var ARGV = process.argv;
 import fs from "fs";
 import path from "path";
-import process from "process"
 import request from "request";
 import cheerio from "cheerio";
 import inquirer from "inquirer";
 import Promise from "bluebird";
 import chalk from "chalk"
-
-var readFile = Promise.promisify(fs.readFile);
-var writeFile = Promise.promisify(fs.writeFile);
-var mkdir = Promise.promisify(fs.mkdir);
+import {readFile, writeFile, mkdir} from "./utils";
 
 const WORKING_DIR = process.cwd();
 
@@ -86,20 +82,44 @@ class Exister
 {
   constructor()
   {
-    this.set = new Set;
+    this.set = new Object;
+    this.length = 0;
+    this.sum = 0;
   }
-  exist(fileName)
+  exist(id)
   {
-    if (this.set.has(fileName))
-    {
-      return true;
+    return (typeof this.set[id]) == "number" && this.set[id] > 0;
+  }
+  count(id)
+  {
+    if (this.exist(id)) {
+      ++this.sum;
+      ++this.set[id];
     } else {
-      this.set.add(fileName);
-      return false;
+      this.set[id] = 1
+      ++this.sum;
+      ++this.length;
     }
+    return this.set[id];
+  }
+}
+class Timer
+{
+  constructor()
+  {
+    this.last = 0;
+  }
+  start()
+  {
+    this.last = Date.now();
+  }
+  end()
+  {
+    return Date.now() - this.last;
   }
 }
 var exister = new Exister();
+var timer = new Timer();
 
 class Context
 {
@@ -133,11 +153,9 @@ Time: ${new Date()}
     /Problem(\d+):/i.test(this.data);
     var id = RegExp.$1;
     var name = `${id}.cpp`;
-    var count = 1;
-    while(exister.exist(name))
-    {
-      name = `${id}(${++count}).cpp`;
-    }
+    var count = exister.count(id);
+    if (count > 1)
+      name = `${id}(${count}).cpp`;
     return name;
   }
 }
@@ -150,7 +168,9 @@ export class Worker
   }
   run()
   {
+    timer.start();
     this.config.get();
+    
     return this.config.check()
     .then(() => {
       return mkdir(this.config.savePath);
@@ -170,7 +190,13 @@ export class Worker
       return tasks;
     }).all()
     .then((res) => {
-      console.log(chalk.green(`OK. ${res.length} files have been saved.`));
+      console.log(chalk.green(`OK! The program runs fine.
+Handle      ${res.length} files;
+Save        ${exister.sum} files;
+Do          ${exister.length} problems;
+Finished in ${timer.end()} ms.
+`
+));
     })
     .catch(err => {
       if (err) console.error(err);
