@@ -13,7 +13,6 @@ const VERSION = packageInfo.version;
 
 if (require.main === module)
 {
-  
   console.log(`
 Version: ${VERSION}
 WorkingDir: ${WORKING_DIR}

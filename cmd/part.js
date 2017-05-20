@@ -9,8 +9,7 @@ import inquirer from "inquirer";
 import Promise from "bluebird";
 import chalk from "chalk"
 import {readFile, writeFile, mkdir} from "./utils";
-
-const WORKING_DIR = process.cwd();
+import {WORKING_DIR} from "./utils";
 
 function emptyDir(filePath)
 {
@@ -103,6 +102,7 @@ class Exister
     return this.set[id];
   }
 }
+
 class Timer
 {
   constructor()
@@ -118,6 +118,7 @@ class Timer
     return Date.now() - this.last;
   }
 }
+
 var exister = new Exister();
 var timer = new Timer();
 
