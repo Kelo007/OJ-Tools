@@ -3,5 +3,8 @@
 一些OJ工具
 ## ojpart
 ### usage
-    npm install https://github.com/ghKelo/OJ-Tools.git -g
+    git clone https://github.com/ghKelo/OJ-Tools.git
+    cd ./OJ-Tools
+    npm install
     npm run build
+    node ./bin/part.js [filename] <outputpath>
